@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Zion AI Procurement RFP Builder</title>
+<meta name="description" content="Build a vendor RFP with AI-specific clauses: audit rights, no-training, eval benchmarks, portability, incident SLAs. Free tool by Zion Tech Group.">
+<style>
+:root{--bg:#100c12;--card:#1d1622;--acc:#f9a8d4;--txt:#f9ecf5;--mut:#bfa6bd}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--txt)}
+header{padding:48px 24px 24px;text-align:center;background:linear-gradient(160deg,#3d1230,#100c12)}
+h1{margin:0 0 8px}.wrap{max-width:920px;margin:0 auto;padding:24px}
+.panel{background:var(--card);border:1px solid #3a2438;border-radius:14px;padding:20px;margin-bottom:20px}
+label{display:block;font-size:.85rem;color:var(--mut);margin:12px 0 4px}
+input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #4a2f46;background:#170f1a;color:var(--txt)}
+.chk{display:flex;gap:10px;align-items:center;margin:6px 0;font-size:.95rem}
+.chk input{width:auto}
+button{margin-top:14px;padding:12px 22px;border:0;border-radius:10px;background:var(--acc);color:#2a0a1e;font-weight:700;cursor:pointer}
+pre{white-space:pre-wrap;background:#150d18;border:1px solid #3a2438;border-radius:12px;padding:16px;font-size:.85rem;max-height:440px;overflow:auto}
+footer{padding:32px 24px;text-align:center;color:var(--mut);font-size:.85rem;border-top:1px solid #2c1c2a;margin-top:40px}
+footer a{color:var(--acc);text-decoration:none;margin:0 8px}
+</style>
+</head>
+<body>
+<header><h1>📋 Zion AI Procurement RFP Builder</h1>
+<p>Standard RFPs miss AI-specific risks. Generate an RFP skeleton with clauses for evals, data rights, portability and incidents.</p></header>
+<div class="wrap">
+<div class="panel">
+<label>Organization</label><input id="org" value="Your Company">
+<label>Procurement subject</label><input id="subj" value="AI customer support platform">
+<label>Contract value band</label><select id="val"><option>Under $50k/yr</option><option>$50k–$250k/yr</option><option>$250k+/yr</option></select>
+<label>AI-specific clauses to include</label>
+<div id="clauses"></div>
+<button onclick="gen()">Generate RFP</button>
+</div>
+<div class="panel" id="result" style="display:none"><pre id="doc"></pre><button onclick="dl()">Download .md</button></div>
+</div>
+<footer>Part of the <a href="https://ziontechgroup.com">Zion Tech Group</a> AI apps network ·
+<a href="https://ziontechgroup.com/zion-ai-policy-generator/">AI Policy Generator</a>
+<a href="https://ziontechgroup.com/zion-vendor-lockin-score/">Lock-in Score</a>
+<a href="https://ziontechgroup.com/it-consulting/">Zion consulting</a></footer>
+<script>
+const CL=['No training on our data (explicit opt-out, contractual)','Benchmark our use case with OUR golden set before award','Model change notice (30-day advance) + right to pin versions','Audit rights incl. eval logs and incident history','Data portability & full export on termination','AI incident notification SLA (SEV1 within 1 hour)','Subprocessor disclosure for underlying model providers','Bias/safety evaluation disclosure per our risk tier','Pricing protection against token price changes >20%','EU AI Act / applicable regulation compliance attestations'];
+document.getElementById('clauses').innerHTML=CL.map((c,i)=>`<label class="chk"><input type="checkbox" id="c${i}" checked> ${c}</label>`).join('');
+function gen(){const org=document.getElementById('org').value,subj=document.getElementById('subj').value,val=document.getElementById('val').value;
+const cls=CL.filter((_,i)=>document.getElementById('c'+i).checked);
+const d=`# Request for Proposal — ${subj}
+**Issued by:** ${org} | **Date:** ${new Date().toISOString().slice(0,10)} | **Contract band:** ${val}
+**Generated via Zion AI RFP Builder (template — requires procurement/legal review)**
+
+## 1. Introduction
+${org} invites proposals for: ${subj}.
+
+## 2. Scope & Requirements
+(Define use cases, volumes, integrations, SLAs here.)
+
+## 3. Evaluation Criteria
+- Capability fit on OUR golden eval set (mandatory proof-of-concept): 30%
+- Total cost of ownership (3-year): 25%
+- Security & compliance posture: 20%
+- Portability / exit terms: 15%
+- Roadmap & support: 10%
+
+## 4. Mandatory AI-Specific Terms
+${cls.map(c=>'- '+c).join('\n')}
+
+## 5. Security & Privacy Questionnaire
+- Model providers used (including subprocessors)
+- Data flows, residency, retention, deletion verification
+- SOC 2 / ISO 27001 / ISO 42001 status
+- Penetration test summary (last 12 months)
+
+## 6. Commercial Terms
+(Price schedule, payment terms, renewal caps.)
+
+## 7. Submission & Timeline
+(Instructions, deadline, Q&A window.)`;
+document.getElementById('doc').textContent=d;document.getElementById('result').style.display='block';window._doc=d;}
+function dl(){const b=new Blob([window._doc],{type:'text/markdown'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='ai-procurement-rfp.md';a.click();}
+</script>
+</body>
+</html>
